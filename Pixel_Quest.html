@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixel Quest</title>
+  <style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1020;--panel:#171b32;--panel2:#202642;--text:#f5f7ff;--muted:#aab1cc;--accent:#7c5cff;--accent2:#ffca3a;--border:#303755}
+body{font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top,#252957 0,#0d1020 55%);color:var(--text);min-height:100vh}
+header{height:70px;display:flex;align-items:center;justify-content:space-between;padding:0 6%;border-bottom:1px solid var(--border);background:#0b0e1b}
+.logo{font-weight:900;letter-spacing:1px}
+.small-btn,.primary{border:0;border-radius:12px;padding:12px 16px;color:white;background:var(--panel2);cursor:pointer;font-weight:700}
+.small-btn:hover,.primary:hover{transform:translateY(-1px)}
+.primary{background:var(--accent);padding:14px 20px}
+main{max-width:1100px;margin:auto;padding:28px 18px 50px}
+.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:20px;align-items:center;background:linear-gradient(135deg,#1b2040,#15182d);border:1px solid var(--border);border-radius:24px;padding:35px;margin-bottom:25px}
+.tag{color:var(--accent2);font-size:.78rem;font-weight:900;letter-spacing:1.5px;margin-bottom:10px}
+h1{font-size:clamp(2.7rem,7vw,5.5rem);line-height:.95;margin-bottom:16px}
+.hero p:not(.tag){color:var(--muted);max-width:560px;line-height:1.6;margin-bottom:22px}
+.hero-art{font-size:6rem;text-align:center;filter:drop-shadow(0 12px 20px #0008)}
+.hero-art span{font-size:3rem}
+.game{background:#101428cc;border:1px solid var(--border);border-radius:24px;padding:22px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.stats div{background:var(--panel);border:1px solid var(--border);border-radius:15px;padding:14px}
+.stats b{display:block;font-size:.8rem;color:var(--muted);margin-bottom:7px}
+.stats span{font-size:1.3rem;font-weight:900}
+.controls{display:flex;gap:10px;margin-bottom:18px}
+input,select{background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:12px;padding:13px 14px;outline:none;font-size:1rem}
+input{flex:1}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:18px;transition:.2s}
+.card:hover{border-color:var(--accent);transform:translateY(-3px)}
+.icon{font-size:3.2rem;background:var(--panel2);border-radius:15px;padding:14px;text-align:center;margin-bottom:13px}
+.card h3{margin-bottom:5px}.card p{color:var(--muted);font-size:.9rem;line-height:1.45;margin-bottom:13px}
+.card .meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;color:var(--accent2);font-weight:800}
+.card button{width:100%}
+.message{min-height:25px;text-align:center;color:var(--muted);padding:15px}
+.challenge{display:flex;justify-content:space-between;gap:20px;align-items:center;background:linear-gradient(90deg,#211d3f,#161a2e);border:1px solid var(--border);border-radius:18px;padding:22px}
+.challenge h2{margin-bottom:5px}.challenge p:last-child{color:var(--muted)}
+footer{text-align:center;color:var(--muted);padding:25px;font-size:.85rem}
+body.light{--bg:#f2f4ff;--panel:#fff;--panel2:#e8eaff;--text:#17182a;--muted:#596078;--border:#d4d8ea;background:#f2f4ff}
+body.light header{background:#fff}
+body.light .hero{background:#fff}.body.light .game{background:#fff}
+@media(max-width:760px){.hero{grid-template-columns:1fr;text-align:center}.hero p:not(.tag){margin-left:auto;margin-right:auto}.hero-art{font-size:4.5rem}.stats{grid-template-columns:repeat(2,1fr)}.cards{grid-template-columns:1fr 1fr}.controls{flex-wrap:wrap}input{min-width:100%}.challenge{flex-direction:column;align-items:stretch}}
+@media(max-width:480px){main{padding:16px 10px 35px}.hero{padding:25px 18px}.cards{grid-template-columns:1fr}.game{padding:14px}.controls select,.controls button{flex:1}.hero-art{font-size:3.8rem}}
+
+</style>
+</head>
+<body>
+  <header>
+    <div class="logo">⚔️ PIXEL QUEST</div>
+    <button id="darkBtn" class="small-btn">🌙</button>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <p class="tag">AVENTURA • ESTRATEGIA • PIXELES</p>
+        <h1>Pixel Quest</h1>
+        <p>Elegí tu héroe, conseguí objetos y superá los desafíos. ¿Hasta dónde podés llegar?</p>
+        <button id="startBtn" class="primary">▶ JUGAR AHORA</button>
+      </div>
+      <div class="hero-art">🧙‍♂️<span>⚔️</span>🐉</div>
+    </section>
+
+    <section class="game" id="game">
+      <div class="stats">
+        <div><b>❤️ Vida</b><span id="hp">100</span>/100</div>
+        <div><b>⭐ Puntos</b><span id="score">0</span></div>
+        <div><b>🏆 Nivel</b><span id="level">1</span></div>
+        <div><b>🪙 Monedas</b><span id="coins">20</span></div>
+      </div>
+
+      <div class="controls">
+        <input id="search" type="search" placeholder="🔎 Buscar personaje u objeto...">
+        <select id="category">
+          <option value="all">Todas las categorías</option>
+          <option value="heroes">Héroes</option>
+          <option value="items">Objetos</option>
+          <option value="enemies">Enemigos</option>
+        </select>
+        <button id="resetBtn" class="small-btn">↻ Reiniciar</button>
+      </div>
+
+      <div id="cards" class="cards"></div>
+      <p id="message" class="message" aria-live="polite">Elegí una carta para empezar.</p>
+
+      <div class="challenge">
+        <div>
+          <p class="tag">DESAFÍO</p>
+          <h2>⚔️ Batalla rápida</h2>
+          <p>Elegí un enemigo y peleá. Si ganás, obtenés puntos y monedas.</p>
+        </div>
+        <button id="battleBtn" class="primary">⚔️ PELEAR</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Pixel Quest • Proyecto escolar realizado con HTML, CSS y JavaScript</p>
+  </footer>
+  <script src="script.js"></script>
+<script>
+const data=[
+ {name:"Aria",cat:"heroes",icon:"🧙‍♀️",desc:"Maga de energía. Ideal para empezar la aventura.",power:85},
+ {name:"Rex",cat:"heroes",icon:"🛡️",desc:"Guerrero resistente que aguanta muchos golpes.",power:72},
+ {name:"Luna",cat:"heroes",icon:"🏹",desc:"Arquera rápida con ataques a distancia.",power:80},
+ {name:"Espada Solar",cat:"items",icon:"⚔️",desc:"Una espada especial que aumenta el ataque.",power:30},
+ {name:"Poción",cat:"items",icon:"🧪",desc:"Recupera vida durante una batalla.",power:25},
+ {name:"Cristal Azul",cat:"items",icon:"💎",desc:"Objeto raro que vale muchas monedas.",power:50},
+ {name:"Dragón",cat:"enemies",icon:"🐉",desc:"Enemigo poderoso. Cuidado con su ataque.",power:92},
+ {name:"Slime",cat:"enemies",icon:"🟢",desc:"Pequeño enemigo que aparece en los primeros niveles.",power:35},
+ {name:"Gólem",cat:"enemies",icon:"🗿",desc:"Lento, pero tiene muchísima fuerza.",power:75}
+];
+let state={hp:100,score:0,level:1,coins:20};
+const $=id=>document.getElementById(id);
+function render(){
+ const q=$("search").value.toLowerCase().trim(), cat=$("category").value;
+ const filtered=data.filter(x=>(cat==="all"||x.cat===cat)&&(x.name.toLowerCase().includes(q)||x.desc.toLowerCase().includes(q)));
+ $("cards").innerHTML=filtered.map(x=>`<article class="card"><div class="icon">${x.icon}</div><h3>${x.name}</h3><p>${x.desc}</p><div class="meta"><span>${label(x.cat)}</span><span>⚡ ${x.power}</span></div><button class="small-btn choose" data-name="${x.name}">Elegir</button></article>`).join("")||"<p>No se encontraron resultados.</p>";
+ document.querySelectorAll(".choose").forEach(b=>b.addEventListener("click",()=>choose(b.dataset.name)));
+}
+function label(c){return c==="heroes"?"HÉROE":c==="items"?"OBJETO":"ENEMIGO"}
+function update(){ $("hp").textContent=state.hp; $("score").textContent=state.score; $("level").textContent=state.level; $("coins").textContent=state.coins; }
+function msg(t){$("message").textContent=t}
+function choose(name){let x=data.find(a=>a.name===name);msg(`Elegiste ${x.icon} ${x.name}. ¡Tiene poder ${x.power}!`); if(x.cat==="items"){state.coins+=5;msg(`✨ Encontraste ${x.name}. +5 monedas.`);update()}}
+function battle(){
+ const enemies=data.filter(x=>x.cat==="enemies"), e=enemies[Math.floor(Math.random()*enemies.length)];
+ const roll=Math.floor(Math.random()*101);
+ if(roll>=e.power){state.score+=100;state.coins+=10;msg(`🏆 ¡Ganaste contra ${e.name}! +100 puntos y +10 monedas.`)}
+ else{state.hp=Math.max(0,state.hp-15);msg(`💥 ${e.name} te atacó. Perdiste 15 de vida.`);if(state.hp===0){msg("☠️ Te quedaste sin vida. Reiniciá la partida para volver a jugar.")}}
+ if(state.score>=300)state.level=2;if(state.score>=700)state.level=3;
+ update();
+}
+$("search").addEventListener("input",render);$("category").addEventListener("change",render);
+$("battleBtn").addEventListener("click",battle);
+$("startBtn").addEventListener("click",()=>{$("game").scrollIntoView({behavior:"smooth"});msg("🚀 ¡Arrancaste la aventura! Elegí un personaje o peleá.");});
+$("resetBtn").addEventListener("click",()=>{state={hp:100,score:0,level:1,coins:20};$("search").value="";$("category").value="all";update();render();msg("🔄 Partida reiniciada.");});
+$("darkBtn").addEventListener("click",()=>document.body.classList.toggle("light"));
+render();update();
+
+</script>
+</body>
+</html>
