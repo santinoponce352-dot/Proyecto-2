@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel & Byte - Tienda & Juego Tycoon</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f5ff',
+                            100: '#e0ebff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            accent: '#f59e0b',
+                            purple: '#8b5cf6'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @keyframes pulse-subtle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+        .animate-pulse-subtle {
+            animation: pulse-subtle 3s infinite ease-in-out;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(100, 116, 139, 0.4);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(100, 116, 139, 0.7);
+        }
+
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .glass-panel {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 font-sans transition-colors duration-300 min-h-screen flex flex-col">
+
+    <!-- TOP ANNOUNCEMENT BAR -->
+    <div class="bg-gradient-to-r from-brand-600 via-indigo-600 to-brand-purple text-white text-xs sm:text-sm py-2 px-4 text-center font-medium shadow-sm flex justify-between items-center">
+        <div class="hidden sm:block">⚡ ¡Aprovecha! Usa el cupón <span class="bg-white/20 px-2 py-0.5 rounded font-mono font-bold">VIBE20</span> para 20% OFF</div>
+        <div class="mx-auto sm:mx-0">🎮 ¡Nuevo! Modo Juego Tycoon de Tienda activado. ¡Desafía tus habilidades!</div>
+        <button onclick="openInfoModal()" class="text-xs bg-white/20 hover:bg-white/30 px-2.5 py-1 rounded-full transition flex items-center gap-1">
+            <i class="fa-solid fa-graduation-cap"></i> <span class="hidden md:inline">Info Proyecto & IA</span>
+        </button>
+    </div>
+
+    <!-- MAIN NAVBAR -->
+    <header class="sticky top-0 z-40 glass-panel shadow-sm transition-all duration-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                
+                <!-- LOGO -->
+                <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('store')">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-600 to-brand-purple p-0.5 shadow-lg shadow-brand-500/30 flex items-center justify-center">
+                        <div class="w-full h-full bg-slate-900 rounded-[14px] flex items-center justify-center text-brand-500">
+                            <svg class="w-7 h-7 text-brand-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+                                <path d="M3 6h18"/>
+                                <path d="M16 10a4 4 0 0 1-8 0"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="text-2xl font-extrabold bg-gradient-to-r from-brand-600 via-indigo-600 to-brand-purple bg-clip-text text-transparent tracking-tight">Pixel & Byte</span>
+                        <span class="block text-[10px] font-bold tracking-widest text-slate-400 uppercase">Interactive Store & Game</span>
+                    </div>
+                </div>
+
+                <!-- NAV LINKS / TABS -->
+                <nav class="hidden md:flex items-center gap-1 bg-slate-100 dark:bg-slate-900 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800">
+                    <button id="nav-store-btn" onclick="switchTab('store')" class="px-5 py-2 rounded-xl font-semibold text-sm transition-all duration-200 bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-500 shadow-sm">
+                        <i class="fa-solid fa-store mr-2"></i>Tienda Online
+                    </button>
+                    <button id="nav-game-btn" onclick="switchTab('game')" class="px-5 py-2 rounded-xl font-semibold text-sm text-slate-600 dark:text-slate-400 hover:text-brand-600 transition-all duration-200 flex items-center gap-2">
+                        <i class="fa-solid fa-gamepad text-brand-purple"></i>Modo Juego Tycoon
+                        <span class="bg-amber-500/20 text-amber-600 dark:text-amber-400 text-[10px] px-2 py-0.5 rounded-full font-bold">MINI-GAME</span>
+                    </button>
+                    <button id="nav-orders-btn" onclick="switchTab('orders')" class="px-5 py-2 rounded-xl font-semibold text-sm text-slate-600 dark:text-slate-400 hover:text-brand-600 transition-all duration-200">
+                        <i class="fa-solid fa-truck-fast mr-2"></i>Mis Pedidos
+                    </button>
+                </nav>
+
+                <!-- USER ACTIONS -->
+                <div class="flex items-center gap-2 sm:gap-3">
+                    
+                    <!-- Dark Mode Toggle -->
+                    <button id="theme-toggle" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition" title="Cambiar Tema">
+                        <i class="fa-solid fa-moon dark:hidden"></i>
+                        <i class="fa-solid fa-sun hidden dark:block text-amber-400"></i>
+                    </button>
+
+                    <!-- Favorites Button -->
+                    <button onclick="toggleFavoritesModal()" class="relative p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition" title="Favoritos">
+                        <i class="fa-solid fa-heart text-rose-500"></i>
+                        <span id="fav-badge" class="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
+                    </button>
+
+                    <!-- Cart Button -->
+                    <button onclick="toggleCartDrawer()" class="relative px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-brand-700 text-white hover:opacity-95 transition shadow-lg shadow-brand-500/25 flex items-center gap-2.5 font-medium">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        <span class="hidden sm:inline">Carrito</span>
+                        <span id="cart-badge" class="bg-white/20 text-white text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+                    </button>
+
+                    <!-- Mobile Menu Trigger -->
+                    <button onclick="toggleMobileMenu()" class="md:hidden p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MOBILE MENU OVERLAY -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 pt-3 pb-6 space-y-2">
+            <button onclick="switchTab('store'); toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-xl font-medium bg-slate-100 dark:bg-slate-800">
+                <i class="fa-solid fa-store mr-2 text-brand-500"></i>Tienda Online
+            </button>
+            <button onclick="switchTab('game'); toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-xl font-medium hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between">
+                <span><i class="fa-solid fa-gamepad mr-2 text-brand-purple"></i>Modo Juego Tycoon</span>
+                <span class="bg-amber-500/20 text-amber-500 text-xs px-2 py-0.5 rounded-full font-bold">¡Jugar!</span>
+            </button>
+            <button onclick="switchTab('orders'); toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-xl font-medium hover:bg-slate-100 dark:hover:bg-slate-800">
+                <i class="fa-solid fa-truck-fast mr-2 text-indigo-500"></i>Estado de Mis Pedidos
+            </button>
+            <button onclick="openInfoModal(); toggleMobileMenu();" class="w-full text-left px-4 py-3 rounded-xl font-medium hover:bg-slate-100 dark:hover:bg-slate-800">
+                <i class="fa-solid fa-graduation-cap mr-2 text-amber-500"></i>Info Proyecto & IA
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- ========================================== -->
+        <!-- VIEW 1: STORE FRONT (TIENDA ONLINE)       -->
+        <!-- ========================================== -->
+        <div id="view-store" class="space-y-8">
+            
+            <!-- HERO BANNER -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-8 sm:p-12 shadow-2xl border border-slate-800">
+                <div class="absolute -right-12 -top-12 w-96 h-96 bg-brand-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-12 -bottom-12 w-96 h-96 bg-brand-purple/20 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="relative z-10 max-w-2xl space-y-4">
+                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/20 border border-brand-500/30 text-brand-400 text-xs font-semibold tracking-wide uppercase">
+                        <i class="fa-solid fa-sparkles"></i> Nueva Colección 2026
+                    </span>
+                    <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+                        Tecnología, Gaming & Estilo de Vida en un solo lugar.
+                    </h1>
+                    <p class="text-slate-300 text-sm sm:text-base">
+                        Explora nuestra selección exclusiva de productos premium con envíos rápidos, garantías extendidas y el mejor soporte al cliente.
+                    </p>
+                    <div class="pt-2 flex flex-wrap gap-4">
+                        <a href="#products-section" class="px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold transition shadow-lg shadow-brand-500/30">
+                            Explorar Catálogo
+                        </a>
+                        <button onclick="switchTab('game')" class="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold backdrop-blur-md transition flex items-center gap-2 border border-white/10">
+                            <i class="fa-solid fa-gamepad text-amber-400"></i> Probar Modo Juego
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTROLS: SEARCH & FILTERS -->
+            <section id="products-section" class="space-y-6">
+                <div class="flex flex-col lg:flex-row gap-4 justify-between items-stretch lg:items-center bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    
+                    <!-- Search Input -->
+                    <div class="relative flex-grow max-w-lg">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="search-input" oninput="filterProducts()" placeholder="Buscar por nombre o descripción..." 
+                               class="w-full pl-11 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 transition">
+                    </div>
+
+                    <!-- Category Pills -->
+                    <div id="category-pills" class="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 scrollbar-none">
+                        <!-- Rendered by JS -->
+                    </div>
+
+                    <!-- Sort Dropdown -->
+                    <div class="flex items-center gap-2">
+                        <label for="sort-select" class="text-xs font-semibold text-slate-500 uppercase whitespace-nowrap">Ordenar:</label>
+                        <select id="sort-select" onchange="filterProducts()" class="py-2.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            <option value="featured">Destacados</option>
+                            <option value="price-low">Precio: Menor a Mayor</option>
+                            <option value="price-high">Precio: Mayor a Menor</option>
+                            <option value="rating">Mejor Valorados</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- PRICE RANGE SLIDER FILTER -->
+                <div class="flex items-center gap-4 bg-white dark:bg-slate-900 px-6 py-3 rounded-2xl border border-slate-200 dark:border-slate-800 text-sm">
+                    <span class="font-medium text-slate-600 dark:text-slate-400">Precio máximo:</span>
+                    <input type="range" id="price-range" min="10" max="1500" step="10" value="1500" oninput="updatePriceFilter(this.value)" class="w-full max-w-xs accent-brand-600 cursor-pointer">
+                    <span id="price-limit-display" class="font-bold text-brand-600 dark:text-brand-400">$1500</span>
+                </div>
+
+                <!-- PRODUCT GRID -->
+                <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <!-- Cards dynamically populated -->
+                </div>
+
+                <!-- EMPTY STATE -->
+                <div id="empty-products" class="hidden text-center py-16 space-y-4">
+                    <div class="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto text-slate-400 text-3xl">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                    <h3 class="text-xl font-bold">No encontramos productos</h3>
+                    <p class="text-slate-500 text-sm max-w-md mx-auto">Intenta cambiando el término de búsqueda o ajustando los filtros de categoría y precio.</p>
+                    <button onclick="resetFilters()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 rounded-xl text-sm font-medium hover:bg-slate-300 transition">
+                        Restablecer Filtros
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW 2: TYCOON GAME SIMULATOR             -->
+        <!-- ========================================== -->
+        <div id="view-game" class="hidden space-y-6">
+            
+            <!-- GAME HEADER DASHBOARD -->
+            <div class="bg-gradient-to-r from-purple-900 via-slate-900 to-indigo-900 text-white p-6 sm:p-8 rounded-3xl shadow-xl border border-purple-500/20 space-y-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="bg-amber-500 text-slate-950 font-black text-xs px-2.5 py-0.5 rounded-full uppercase tracking-wider">Modo Desafío</span>
+                            <h2 class="text-2xl sm:text-3xl font-black">Simulador Tycoon de Tienda</h2>
+                        </div>
+                        <p class="text-slate-300 text-sm mt-1">¡Demuestra tu rapidez! Atiende pedidos de clientes armando los carritos correctos antes de que acabe el tiempo.</p>
+                    </div>
+
+                    <div class="flex items-center gap-4 bg-slate-900/80 p-3 rounded-2xl border border-white/10 backdrop-blur-md">
+                        <div class="text-center px-3 border-r border-slate-700">
+                            <span class="block text-[10px] text-slate-400 font-bold uppercase">Reputación</span>
+                            <span id="game-reputation" class="text-xl font-black text-amber-400">100 ⭐</span>
+                        </div>
+                        <div class="text-center px-3 border-r border-slate-700">
+                            <span class="block text-[10px] text-slate-400 font-bold uppercase">Ingresos</span>
+                            <span id="game-earnings" class="text-xl font-black text-emerald-400">$0</span>
+                        </div>
+                        <div class="text-center px-3">
+                            <span class="block text-[10px] text-slate-400 font-bold uppercase">Completados</span>
+                            <span id="game-orders-count" class="text-xl font-black text-brand-400">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GAME CONTROLS -->
+                <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-white/10">
+                    <button id="start-game-btn" onclick="startGameSession()" class="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold hover:brightness-110 transition shadow-lg shadow-emerald-500/20 flex items-center gap-2">
+                        <i class="fa-solid fa-play"></i> Iniciar Nuevo Turno
+                    </button>
+                    <div class="text-xs text-slate-300 bg-white/5 px-4 py-2 rounded-xl border border-white/5">
+                        💡 <strong>Reglas:</strong> Selecciona exactamente los artículos que el cliente pide y presiona <strong>"Enviar Pedido"</strong>.
+                    </div>
+                </div>
+            </div>
+
+            <!-- GAME PLAY AREA -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- ACTIVE ORDER PANEL -->
+                <div class="lg:col-span-1 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-lg flex items-center gap-2">
+                                <i class="fa-solid fa-user-astronaut text-brand-purple"></i> Cliente en Espera
+                            </h3>
+                            <span id="game-timer" class="text-sm font-mono font-bold bg-rose-500/10 text-rose-500 px-3 py-1 rounded-full border border-rose-500/20">
+                                ⏳ 30s
+                            </span>
+                        </div>
+
+                        <!-- Customer Avatar & Bubble -->
+                        <div id="customer-card" class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3 mb-6">
+                            <div class="flex items-center gap-3">
+                                <div id="customer-avatar" class="w-12 h-12 rounded-full bg-brand-500 text-white font-bold text-xl flex items-center justify-center">
+                                    👤
+                                </div>
+                                <div>
+                                    <h4 id="customer-name" class="font-bold text-sm">Cargando cliente...</h4>
+                                    <p id="customer-note" class="text-xs text-slate-500 italic">"Esperando turno..."</p>
+                                </div>
+                            </div>
+
+                            <div class="border-t border-slate-200 dark:border-slate-700 pt-3">
+                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-2">Pedido Requerido:</span>
+                                <ul id="customer-items-list" class="space-y-1.5 text-sm font-medium">
+                                    <li class="text-slate-400 italic">Presiona "Iniciar Turno" para comenzar.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PREPARED BASKET CHECK -->
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="font-medium text-slate-500">Tu Empaque Actual:</span>
+                            <span id="game-packed-count" class="font-bold text-brand-600">0 ítems</span>
+                        </div>
+                        <div id="game-packed-items" class="min-h-[80px] p-3 bg-slate-100 dark:bg-slate-800 rounded-xl flex flex-wrap gap-2 items-center">
+                            <span class="text-xs text-slate-400 italic">Agrega productos del catálogo de juego 👇</span>
+                        </div>
+                        <button id="dispatch-order-btn" onclick="dispatchGameOrder()" disabled class="w-full py-3 bg-emerald-600 text-white rounded-xl font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-emerald-500 transition">
+                            <i class="fa-solid fa-paper-plane mr-2"></i> Enviar Pedido
+                        </button>
+                    </div>
+                </div>
+
+                <!-- GAME SHELF CATALOG -->
+                <div class="lg:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-boxes-packing text-brand-600"></i> Estantería de Productos
+                    </h3>
+                    <div id="game-catalog-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW 3: ORDERS TRACKING (MIS PEDIDOS)      -->
+        <!-- ========================================== -->
+        <div id="view-orders" class="hidden space-y-6">
+            <div class="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+                <div>
+                    <h2 class="text-2xl font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-truck-fast text-brand-600"></i> Estado de tus Pedidos Simulado
+                    </h2>
+                    <p class="text-slate-500 text-sm">Monitorea el procesamiento y envío de tus compras en tiempo real.</p>
+                </div>
+
+                <div id="orders-list-container" class="space-y-6">
+                    <!-- Populated dynamically or empty state -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- CART DRAWER / MODAL -->
+    <div id="cart-drawer" class="fixed inset-0 z-50 overflow-hidden pointer-events-none transition-opacity duration-300 opacity-0">
+        <div onclick="toggleCartDrawer()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm pointer-events-auto"></div>
+        
+        <div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
+            <div class="w-screen max-w-md bg-white dark:bg-slate-900 shadow-2xl pointer-events-auto flex flex-col justify-between border-l border-slate-200 dark:border-slate-800">
+                
+                <!-- Drawer Header -->
+                <div class="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-brand-500/10 text-brand-600 flex items-center justify-center font-bold">
+                            <i class="fa-solid fa-bag-shopping"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Tu Carrito</h3>
+                    </div>
+                    <button onclick="toggleCartDrawer()" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                        <i class="fa-solid fa-xmark text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- Drawer Content -->
+                <div id="cart-items-list" class="p-6 overflow-y-auto flex-grow space-y-4">
+                    <!-- Items rendered dynamically -->
+                </div>
+
+                <!-- Drawer Footer & Checkout -->
+                <div id="cart-footer" class="p-6 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 space-y-4">
+                    
+                    <!-- Coupon Code Input -->
+                    <div class="flex gap-2">
+                        <input type="text" id="coupon-input" placeholder="Cupón (ej: VIBE20)" class="flex-grow px-3 py-2 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 uppercase font-mono">
+                        <button onclick="applyCoupon()" class="px-4 py-2 bg-slate-800 dark:bg-slate-700 text-white rounded-xl text-xs font-bold hover:bg-slate-700 transition">Aplicar</button>
+                    </div>
+                    <p id="coupon-msg" class="text-xs font-semibold hidden"></p>
+
+                    <!-- Summary breakdown -->
+                    <div class="space-y-1.5 text-sm">
+                        <div class="flex justify-between text-slate-500">
+                            <span>Subtotal:</span>
+                            <span id="cart-subtotal" class="font-medium">$0.00</span>
+                        </div>
+                        <div id="discount-row" class="flex justify-between text-emerald-600 font-medium hidden">
+                            <span>Descuento Aplicado:</span>
+                            <span id="cart-discount">-$0.00</span>
+                        </div>
+                        <div class="flex justify-between text-slate-500">
+                            <span>Envío:</span>
+                            <span class="text-emerald-500 font-bold">GRATIS</span>
+                        </div>
+                        <div class="flex justify-between text-lg font-extrabold text-slate-900 dark:text-white pt-2 border-t border-slate-200 dark:border-slate-800">
+                            <span>Total:</span>
+                            <span id="cart-total" class="text-brand-600 dark:text-brand-400">$0.00</span>
+                        </div>
+                    </div>
+
+                    <button onclick="openCheckoutModal()" id="checkout-btn" class="w-full py-3.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-bold shadow-lg shadow-brand-500/30 transition flex items-center justify-center gap-2">
+                        <span>Proceder al Pago</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHECKOUT MODAL -->
+    <div id="checkout-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md hidden">
+        <div class="bg-white dark:bg-slate-900 max-w-lg w-full rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center">
+                <h3 class="text-xl font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-credit-card text-brand-600"></i> Finalizar Compra
+                </h3>
+                <button onclick="closeCheckoutModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+
+            <form id="checkout-form" onsubmit="processCheckout(event)" class="space-y-4">
+                <div class="space-y-1">
+                    <label class="text-xs font-bold uppercase text-slate-500">Nombre Completo</label>
+                    <input type="text" required placeholder="Juan Pérez" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold uppercase text-slate-500">Email</label>
+                        <input type="email" required placeholder="juan@ejemplo.com" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold uppercase text-slate-500">Teléfono</label>
+                        <input type="tel" required placeholder="+54 11 1234 5678" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-xs font-bold uppercase text-slate-500">Dirección de Envío</label>
+                    <input type="text" required placeholder="Av. Siempreviva 742" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-xs font-bold uppercase text-slate-500">Método de Pago Simulado</label>
+                    <select class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm">
+                        <option>💳 Tarjeta de Crédito / Débito</option>
+                        <option>📱 Transferencia MercadoPago</option>
+                        <option>💵 Efectivo Contra Entrega</option>
+                    </select>
+                </div>
+
+                <div class="p-4 bg-brand-50 dark:bg-brand-950/40 rounded-2xl border border-brand-200 dark:border-brand-800 text-xs text-brand-700 dark:text-brand-300">
+                    <i class="fa-solid fa-lock mr-1"></i> Simulación segura. No se realizarán cobros reales.
+                </div>
+
+                <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-bold shadow-lg shadow-emerald-500/25 hover:brightness-110 transition">
+                    Confirmar Pedido ($<span id="checkout-final-total">0.00</span>)
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FAVORITES MODAL -->
+    <div id="fav-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md hidden">
+        <div class="bg-white dark:bg-slate-900 max-w-lg w-full rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-xl font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-heart text-rose-500"></i> Tus Favoritos
+                </h3>
+                <button onclick="toggleFavoritesModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div id="fav-items-container" class="max-h-80 overflow-y-auto space-y-3">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ACADEMIC / VIBE CODING INFO MODAL -->
+    <div id="info-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md hidden">
+        <div class="bg-white dark:bg-slate-900 max-w-2xl w-full rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 space-y-6 max-h-[85vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-4">
+                <div>
+                    <span class="text-xs font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider">Documentación académica</span>
+                    <h3 class="text-2xl font-black">Proyecto Tienda Online & Vibe Coding</h3>
+                </div>
+                <button onclick="closeInfoModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+
+            <div class="space-y-4 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                <div class="bg-slate-100 dark:bg-slate-800/80 p-4 rounded-2xl">
+                    <h4 class="font-bold text-slate-900 dark:text-white mb-1"><i class="fa-solid fa-code text-brand-500 mr-2"></i>Estructura Técnica</h4>
+                    <p>Desarrollado integralmente con <strong>HTML5, CSS (Tailwind CSS) y JavaScript ES6+</strong> interactivo en un único documento autocontenido con almacenamiento persistente en <code>localStorage</code>.</p>
+                </div>
+
+                <div class="bg-slate-100 dark:bg-slate-800/80 p-4 rounded-2xl">
+                    <h4 class="font-bold text-slate-900 dark:text-white mb-1"><i class="fa-solid fa-robot text-brand-purple mr-2"></i>Uso de Inteligencia Artificial (Vibe Coding)</h4>
+                    <p>Se utilizaron modelos de lenguaje avanzados para:</p>
+                    <ul class="list-disc list-inside mt-2 space-y-1">
+                        <li>Diseñar la arquitectura del simulador de estado de pedidos e interfaz Tycoon.</li>
+                        <li>Generación de assets SVG dinamizados y paleta de colores adaptable.</li>
+                        <li>Optimización de funciones de filtrado, ordenamiento y carrito de compras en JS.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-slate-100 dark:bg-slate-800/80 p-4 rounded-2xl">
+                    <h4 class="font-bold text-slate-900 dark:text-white mb-1"><i class="fa-brands fa-github text-emerald-500 mr-2"></i>Publicación en GitHub Pages</h4>
+                    <ol class="list-decimal list-inside mt-2 space-y-1 text-xs font-mono">
+                        <li>Crear repositorio en GitHub llamado: <code>mi-tienda-online</code></li>
+                        <li>Subir este archivo como <code>index.html</code> y crear un <code>README.md</code></li>
+                        <li>En GitHub: Settings ➔ Pages ➔ Select Source <code>main branch</code> / <code>root</code> ➔ Save.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="pt-4 flex justify-end">
+                <button onclick="closeInfoModal()" class="px-6 py-2.5 bg-brand-600 text-white font-bold rounded-xl hover:bg-brand-500 transition">
+                    Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        /* ========================================== */
+        /* STATE MANAGEMENT & DATA                    */
+        /* ========================================== */
+
+        const PRODUCTS = [
+            {
+                id: 'p1',
+                name: 'Consola Retro Pixel X',
+                category: 'Videojuegos',
+                price: 180,
+                rating: 5,
+                ratingCount: 42,
+                imageSvg: `<svg class="w-20 h-20 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="6" width="20" height="12" rx="3"/><path d="M6 12h4m-2-2v4"/><circle cx="15" cy="11" r="1" fill="currentColor"/><circle cx="18" cy="13" r="1" fill="currentColor"/></svg>`,
+                desc: 'Consola portátil retro con más de 500 juegos integrados y pantalla HD.'
+            },
+            {
+                id: 'p2',
+                name: 'Audífonos Gaming Wireless',
+                category: 'Tecnología',
+                price: 120,
+                rating: 4,
+                ratingCount: 28,
+                imageSvg: `<svg class="w-20 h-20 text-brand-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 14v3a3 3 0 0 0 3 3h12a3 3 0 0 0 3-3v-3"/><path d="M2 10h20"/><path d="M12 2a8 8 0 0 0-8 8v4h16v-4a8 8 0 0 0-8-8Z"/></svg>`,
+                desc: 'Sonido envolvente 7.1 con cancelación activa de ruido y micrófono RGB.'
+            },
+            {
+                id: 'p3',
+                name: 'Teclado Mecánico RGB',
+                category: 'Tecnología',
+                price: 95,
+                rating: 5,
+                ratingCount: 89,
+                imageSvg: `<svg class="w-20 h-20 text-purple-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M8 16h8"/></svg>`,
+                desc: 'Switches mecánicos táctiles con iluminación RGB personalizable.'
+            },
+            {
+                id: 'p4',
+                name: 'Sudadera Cyberpunk Hoodie',
+                category: 'Ropa',
+                price: 65,
+                rating: 4,
+                ratingCount: 19,
+                imageSvg: `<svg class="w-20 h-20 text-pink-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23Z"/></svg>`,
+                desc: 'Algodón premium con detalles fosforescentes y diseño urbano futurista.'
+            },
+            {
+                id: 'p5',
+                name: 'Pastel Gourmet Red Velvet',
+                category: 'Repostería',
+                price: 35,
+                rating: 5,
+                ratingCount: 65,
+                imageSvg: `<svg class="w-20 h-20 text-rose-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8"/><path d="M4 16s2-1 4-1 4 1 4 1 2-1 4-1 4 1 4 1"/><path d="M12 7V3m-2 2h4"/></svg>`,
+                desc: 'Delicioso pastel artesanal con queso crema de vainilla y cobertura de frutos rojos.'
+            },
+            {
+                id: 'p6',
+                name: 'Libro: Algoritmos del Futuro',
+                category: 'Libros',
+                price: 28,
+                rating: 4,
+                ratingCount: 15,
+                imageSvg: `<svg class="w-20 h-20 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`,
+                desc: 'Una guía esencial sobre desarrollo web, inteligencias artificiales y Vibe Coding.'
+            }
+        ];
+
+        let cart = JSON.parse(localStorage.getItem('pixel_cart')) || [];
+        let favorites = JSON.parse(localStorage.getItem('pixel_favs')) || [];
+        let orders = JSON.parse(localStorage.getItem('pixel_orders')) || [];
+        
+        let activeCategory = 'Todos';
+        let activeMaxPrice = 1500;
+        let activeCoupon = null;
+
+        // GAME STATE
+        let gameActive = false;
+        let gameScore = 0;
+        let gameEarnings = 0;
+        let gameReputation = 100;
+        let gameTimer = null;
+        let gameTimeRemaining = 30;
+        let currentOrderRequirement = null;
+        let currentPackedItems = [];
+
+        /* ========================================== */
+        /* INITIALIZATION & EVENT LISTENERS           */
+        /* ========================================== */
+
+        window.onload = function() {
+            initTheme();
+            renderCategoryPills();
+            renderProducts();
+            updateCartUI();
+            updateFavUI();
+            renderOrders();
+            renderGameCatalog();
+        };
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('pixel_theme');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+
+            document.getElementById('theme-toggle').addEventListener('click', () => {
+                const isDark = document.documentElement.classList.toggle('dark');
+                localStorage.setItem('pixel_theme', isDark ? 'dark' : 'light');
+                showToast(isDark ? 'Modo Oscuro Activado 🌙' : 'Modo Claro Activado ☀️');
+            });
+        }
+
+        function switchTab(tab) {
+            document.getElementById('view-store').classList.add('hidden');
+            document.getElementById('view-game').classList.add('hidden');
+            document.getElementById('view-orders').classList.add('hidden');
+
+            document.getElementById('nav-store-btn').className = "px-5 py-2 rounded-xl font-semibold text-sm transition-all duration-200 text-slate-600 dark:text-slate-400";
+            document.getElementById('nav-game-btn').className = "px-5 py-2 rounded-xl font-semibold text-sm transition-all duration-200 text-slate-600 dark:text-slate-400";
+            document.getElementById('nav-orders-btn').className = "px-5 py-2 rounded-xl font-semibold text-sm transition-all duration-200 text-slate-600 dark:text-slate-400";
+
+            if (tab === 'store') {
+                document.getElementById('view-store').classList.remove('hidden');
+                document.getElementById('nav-store-btn').className = "px-5 py-2 rounded-xl font-semibold text-sm transition-all duration-200 bg-white dark:bg-slate-800 text-brand-600 dark:text-brand-500 shadow-sm";
+            } else if (tab === 'game') {
+                document.getElementById('view-game').classList.remove('hidden');
+                document.getElementById('nav-game-btn').className = "px-5 py-2 rounded-xl font-semibold text-sm transition-all duration-200 bg-white dark:bg-slate-800 text-brand-purple shadow-sm";
+            } else if (tab === 'orders') {
+                document.getElementById('view-orders').classList.remove('hidden');
+                document.getElementById('nav-orders-btn').className = "px-5 py-2 rounded-xl font-semibold text-sm transition-all duration-200 bg-white dark:bg-slate-800 text-indigo-500 shadow-sm";
+            }
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+
+        function renderCategoryPills() {
+            const categories = ['Todos', ...new Set(PRODUCTS.map(p => p.category))];
+            const container = document.getElementById('category-pills');
+            
+            container.innerHTML = categories.map(cat => `
+                <button onclick="setCategory('${cat}')" 
+                        class="px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap ${
+                            activeCategory === cat 
+                            ? 'bg-brand-600 text-white shadow-md shadow-brand-500/20' 
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                        }">
+                    ${cat}
+                </button>
+            `).join('');
+        }
+
+        function setCategory(cat) {
+            activeCategory = cat;
+            renderCategoryPills();
+            filterProducts();
+        }
+
+        function updatePriceFilter(val) {
+            activeMaxPrice = parseFloat(val);
+            document.getElementById('price-limit-display').innerText = `$${val}`;
+            filterProducts();
+        }
+
+        function filterProducts() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const sortVal = document.getElementById('sort-select').value;
+
+            let filtered = PRODUCTS.filter(p => {
+                const matchesCat = (activeCategory === 'Todos' || p.category === activeCategory);
+                const matchesSearch = p.name.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query);
+                const matchesPrice = p.price <= activeMaxPrice;
+                return matchesCat && matchesSearch && matchesPrice;
+            });
+
+            if (sortVal === 'price-low') filtered.sort((a, b) => a.price - b.price);
+            if (sortVal === 'price-high') filtered.sort((a, b) => b.price - a.price);
+            if (sortVal === 'rating') filtered.sort((a, b) => b.rating - a.rating);
+
+            renderProducts(filtered);
+        }
+
+        function resetFilters() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('price-range').value = 1500;
+            activeMaxPrice = 1500;
+            document.getElementById('price-limit-display').innerText = '$1500';
+            setCategory('Todos');
+        }
+
+        function renderProducts(list = PRODUCTS) {
+            const grid = document.getElementById('products-grid');
+            const empty = document.getElementById('empty-products');
+
+            if (list.length === 0) {
+                grid.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+
+            grid.innerHTML = list.map(product => {
+                const isFav = favorites.includes(product.id);
+                
+                // Generate interactive stars HTML
+                let starsHtml = '';
+                for (let i = 1; i <= 5; i++) {
+                    starsHtml += `<i onclick="rateProduct('${product.id}', ${i})" class="fa-solid fa-star cursor-pointer transition ${i <= product.rating ? 'text-amber-400' : 'text-slate-300 dark:text-slate-700'} hover:scale-125"></i>`;
+                }
+
+                return `
+                <div class="group bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative">
+                    <!-- Favorite Toggle Button -->
+                    <button onclick="toggleFavorite('${product.id}')" class="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-rose-500 transition flex items-center justify-center">
+                        <i class="fa-solid fa-heart ${isFav ? 'text-rose-500' : ''}"></i>
+                    </button>
+
+                    <div>
+                        <!-- Product SVG Graphic Image -->
+                        <div class="w-full h-44 bg-slate-50 dark:bg-slate-800/50 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-105 transition duration-300">
+                            ${product.imageSvg}
+                        </div>
+
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-950 px-2.5 py-1 rounded-md">
+                            ${product.category}
+                        </span>
+
+                        <h3 class="font-bold text-base mt-2 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition">${product.name}</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-1">${product.desc}</p>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-1 text-xs">
+                                ${starsHtml}
+                                <span class="text-[10px] text-slate-400 ml-1">(${product.ratingCount})</span>
+                            </div>
+                            <span class="text-xl font-extrabold text-slate-900 dark:text-white">$${product.price}</span>
+                        </div>
+
+                        <button onclick="addToCart('${product.id}')" class="w-full py-2.5 rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs hover:bg-brand-600 dark:hover:bg-brand-400 dark:hover:text-white transition shadow-md flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-cart-plus"></i> Agregar al Carrito
+                        </button>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function rateProduct(id, stars) {
+            const product = PRODUCTS.find(p => p.id === id);
+            if (product) {
+                product.rating = stars;
+                product.ratingCount += 1;
+                filterProducts();
+                showToast(`¡Gracias por valorar "${product.name}" con ${stars} estrellas! ⭐`);
+            }
+        }
+
+        function addToCart(productId) {
+            const existing = cart.find(item => item.id === productId);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ id: productId, qty: 1 });
+            }
+            saveCart();
+            updateCartUI();
+            showToast('Producto agregado al carrito 🛒');
+        }
+
+        function updateQty(productId, change) {
+            const item = cart.find(i => i.id === productId);
+            if (item) {
+                item.qty += change;
+                if (item.qty <= 0) {
+                    cart = cart.filter(i => i.id !== productId);
+                }
+                saveCart();
+                updateCartUI();
+            }
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(i => i.id !== productId);
+            saveCart();
+            updateCartUI();
+            showToast('Producto eliminado del carrito 🗑️');
+        }
+
+        function saveCart() {
+            localStorage.setItem('pixel_cart', JSON.stringify(cart));
+        }
+
+        function updateCartUI() {
+            const count = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('cart-badge').innerText = count;
+
+            const list = document.getElementById('cart-items-list');
+            if (cart.length === 0) {
+                list.innerHTML = `
+                    <div class="text-center py-12 space-y-3">
+                        <i class="fa-solid fa-basket-shopping text-4xl text-slate-300"></i>
+                        <p class="text-sm text-slate-500">Tu carrito está vacío.</p>
+                    </div>
+                `;
+                document.getElementById('cart-subtotal').innerText = '$0.00';
+                document.getElementById('cart-total').innerText = '$0.00';
+                return;
+            }
+
+            let subtotal = 0;
+            list.innerHTML = cart.map(item => {
+                const prod = PRODUCTS.find(p => p.id === item.id);
+                if (!prod) return '';
+                const itemTotal = prod.price * item.qty;
+                subtotal += itemTotal;
+
+                return `
+                <div class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-800">
+                    <div class="w-12 h-12 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center p-1">
+                        ${prod.imageSvg}
+                    </div>
+                    <div class="flex-grow">
+                        <h4 class="font-bold text-xs">${prod.name}</h4>
+                        <span class="text-xs text-brand-600 font-semibold">$${prod.price}</span>
+                    </div>
+                    <div class="flex items-center gap-2 bg-white dark:bg-slate-800 rounded-xl px-2 py-1 border border-slate-200 dark:border-slate-700">
+                        <button onclick="updateQty('${prod.id}', -1)" class="text-slate-400 hover:text-slate-700 font-bold px-1">-</button>
+                        <span class="text-xs font-bold w-4 text-center">${item.qty}</span>
+                        <button onclick="updateQty('${prod.id}', 1)" class="text-slate-400 hover:text-slate-700 font-bold px-1">+</button>
+                    </div>
+                    <button onclick="removeFromCart('${prod.id}')" class="text-rose-400 hover:text-rose-600 p-1">
+                        <i class="fa-solid fa-trash text-xs"></i>
+                    </button>
+                </div>
+                `;
+            }).join('');
+
+            let discount = 0;
+            if (activeCoupon === 'VIBE20') discount = subtotal * 0.20;
+            if (activeCoupon === 'DESCUENTO10') discount = subtotal * 0.10;
+
+            const total = subtotal - discount;
+
+            document.getElementById('cart-subtotal').innerText = `$${subtotal.toFixed(2)}`;
+            if (discount > 0) {
+                document.getElementById('discount-row').classList.remove('hidden');
+                document.getElementById('cart-discount').innerText = `-$${discount.toFixed(2)}`;
+            } else {
+                document.getElementById('discount-row').classList.add('hidden');
+            }
+            document.getElementById('cart-total').innerText = `$${total.toFixed(2)}`;
+            document.getElementById('checkout-final-total').innerText = total.toFixed(2);
+        }
+
+        function toggleCartDrawer() {
+            const drawer = document.getElementById('cart-drawer');
+            if (drawer.classList.contains('opacity-0')) {
+                drawer.classList.remove('opacity-0', 'pointer-events-none');
+            } else {
+                drawer.classList.add('opacity-0', 'pointer-events-none');
+            }
+        }
+
+        function applyCoupon() {
+            const code = document.getElementById('coupon-input').value.trim().toUpperCase();
+            const msg = document.getElementById('coupon-msg');
+            
+            if (code === 'VIBE20' || code === 'DESCUENTO10') {
+                activeCoupon = code;
+                msg.innerText = `¡Cupón ${code} aplicado correctamente!`;
+                msg.className = "text-xs font-semibold text-emerald-500 block";
+                updateCartUI();
+                showToast(`🎉 ¡Cupón ${code} Activado!`);
+            } else {
+                msg.innerText = 'Cupón inválido. Prueba VIBE20 o DESCUENTO10';
+                msg.className = "text-xs font-semibold text-rose-500 block";
+            }
+        }
+
+        function toggleFavorite(productId) {
+            if (favorites.includes(productId)) {
+                favorites = favorites.filter(id => id !== productId);
+                showToast('Eliminado de favoritos 💔');
+            } else {
+                favorites.push(productId);
+                showToast('Agregado a tus favoritos ❤️');
+            }
+            localStorage.setItem('pixel_favs', JSON.stringify(favorites));
+            updateFavUI();
+            renderProducts();
+        }
+
+        function updateFavUI() {
+            document.getElementById('fav-badge').innerText = favorites.length;
+            if (favorites.length > 0) document.getElementById('fav-badge').classList.remove('hidden');
+            else document.getElementById('fav-badge').classList.add('hidden');
+
+            const container = document.getElementById('fav-items-container');
+            if (favorites.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-400 italic text-center py-4">No tienes favoritos guardados.</p>';
+                return;
+            }
+
+            container.innerHTML = favorites.map(id => {
+                const p = PRODUCTS.find(item => item.id === id);
+                if (!p) return '';
+                return `
+                <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-xl">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10">${p.imageSvg}</div>
+                        <div>
+                            <h4 class="font-bold text-xs">${p.name}</h4>
+                            <span class="text-xs text-brand-600 font-bold">$${p.price}</span>
+                        </div>
+                    </div>
+                    <button onclick="addToCart('${p.id}')" class="px-3 py-1.5 bg-brand-600 text-white rounded-lg text-xs font-bold">
+                        Agregar
+                    </button>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function toggleFavoritesModal() {
+            document.getElementById('fav-modal').classList.toggle('hidden');
+        }
+
+        function openCheckoutModal() {
+            if (cart.length === 0) {
+                showToast('Añade productos antes de pagar 🛒');
+                return;
+            }
+            toggleCartDrawer();
+            document.getElementById('checkout-modal').classList.remove('hidden');
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkout-modal').classList.add('hidden');
+        }
+
+        function openInfoModal() {
+            document.getElementById('info-modal').classList.remove('hidden');
+        }
+
+        function closeInfoModal() {
+            document.getElementById('info-modal').classList.add('hidden');
+        }
+
+        function processCheckout(e) {
+            e.preventDefault();
+            const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+            const newOrder = {
+                id: orderId,
+                date: new Date().toLocaleDateString(),
+                items: [...cart],
+                status: 'Procesando',
+                progress: 25
+            };
+
+            orders.unshift(newOrder);
+            localStorage.setItem('pixel_orders', JSON.stringify(orders));
+
+            cart = [];
+            saveCart();
+            updateCartUI();
+
+            closeCheckoutModal();
+            switchTab('orders');
+            showToast(`¡Pedido ${orderId} realizado con éxito! 📦`);
+            renderOrders();
+
+            // Simulate real-time progress update
+            setTimeout(() => {
+                newOrder.status = 'En Camino';
+                newOrder.progress = 65;
+                localStorage.setItem('pixel_orders', JSON.stringify(orders));
+                renderOrders();
+            }, 8000);
+
+            setTimeout(() => {
+                newOrder.status = 'Entregado';
+                newOrder.progress = 100;
+                localStorage.setItem('pixel_orders', JSON.stringify(orders));
+                renderOrders();
+            }, 18000);
+        }
+
+        function renderOrders() {
+            const container = document.getElementById('orders-list-container');
+            if (orders.length === 0) {
+                container.innerHTML = `
+                <div class="text-center py-12 space-y-3">
+                    <i class="fa-solid fa-box-open text-4xl text-slate-300"></i>
+                    <p class="text-sm text-slate-500">Aún no has realizado pedidos.</p>
+                </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = orders.map(order => `
+                <div class="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-4">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                        <div>
+                            <span class="text-xs font-mono font-bold text-brand-600">${order.id}</span>
+                            <span class="text-xs text-slate-400 block sm:inline sm:ml-2">Fecha: ${order.date}</span>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold ${
+                            order.status === 'Entregado' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'
+                        }">
+                            <i class="fa-solid fa-circle-dot mr-1"></i> ${order.status}
+                        </span>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="space-y-1">
+                        <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden">
+                            <div class="bg-gradient-to-r from-brand-600 to-emerald-500 h-full transition-all duration-500" style="width: ${order.progress}%"></div>
+                        </div>
+                        <div class="flex justify-between text-[10px] font-bold uppercase text-slate-400">
+                            <span>Procesando</span>
+                            <span>En Camino</span>
+                            <span>Entregado</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        const CUSTOMERS = [
+            { name: "Sora Dev", avatar: "👨‍💻", note: "¡Hola! Necesito un combo de gaming rápido." },
+            { name: "Elena R.", avatar: "👩‍‍🎨", note: "Buscando algo dulce y un buen libro." },
+            { name: "GamerPro99", avatar: "🎮", note: "¡Tengo un torneo hoy mismo, apúrate!" }
+        ];
+
+        function renderGameCatalog() {
+            const grid = document.getElementById('game-catalog-grid');
+            grid.innerHTML = PRODUCTS.map(p => `
+                <div onclick="addGamePackedItem('${p.id}')" class="bg-slate-50 dark:bg-slate-800 p-3 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-brand-500 cursor-pointer transition text-center space-y-2 group">
+                    <div class="w-12 h-12 mx-auto flex items-center justify-center">${p.imageSvg}</div>
+                    <h5 class="font-bold text-xs group-hover:text-brand-500">${p.name}</h5>
+                    <span class="text-xs font-semibold text-slate-500">$${p.price}</span>
+                </div>
+            `).join('');
+        }
+
+        function startGameSession() {
+            gameActive = true;
+            gameTimeRemaining = 25;
+            currentPackedItems = [];
+            
+            // Random Customer & Order Demand
+            const randomCust = CUSTOMERS[Math.floor(Math.random() * CUSTOMERS.length)];
+            const randomProd1 = PRODUCTS[Math.floor(Math.random() * PRODUCTS.length)];
+            let randomProd2 = PRODUCTS[Math.floor(Math.random() * PRODUCTS.length)];
+            
+            currentOrderRequirement = [randomProd1.id, randomProd2.id];
+
+            document.getElementById('customer-avatar').innerText = randomCust.avatar;
+            document.getElementById('customer-name').innerText = randomCust.name;
+            document.getElementById('customer-note').innerText = `"${randomCust.note}"`;
+
+            document.getElementById('customer-items-list').innerHTML = `
+                <li class="text-xs font-bold text-brand-600">▪ 1x ${randomProd1.name}</li>
+                <li class="text-xs font-bold text-brand-600">▪ 1x ${randomProd2.name}</li>
+            `;
+
+            document.getElementById('dispatch-order-btn').disabled = false;
+            updateGamePackedUI();
+
+            if (gameTimer) clearInterval(gameTimer);
+            gameTimer = setInterval(() => {
+                gameTimeRemaining -= 1;
+                document.getElementById('game-timer').innerText = `⏳ ${gameTimeRemaining}s`;
+
+                if (gameTimeRemaining <= 0) {
+                    clearInterval(gameTimer);
+                    gameReputation = Math.max(0, gameReputation - 15);
+                    showToast('⏰ ¡Se agotó el tiempo! El cliente se marchó enojado.');
+                    updateGameDashboard();
+                    document.getElementById('dispatch-order-btn').disabled = true;
+                }
+            }, 1000);
+        }
+
+        function addGamePackedItem(prodId) {
+            if (!gameActive) {
+                showToast('Presiona "Iniciar Turno" para comenzar.');
+                return;
+            }
+            currentPackedItems.push(prodId);
+            updateGamePackedUI();
+        }
+
+        function updateGamePackedUI() {
+            const container = document.getElementById('game-packed-items');
+            document.getElementById('game-packed-count').innerText = `${currentPackedItems.length} ítems`;
+
+            if (currentPackedItems.length === 0) {
+                container.innerHTML = '<span class="text-xs text-slate-400 italic">Toca productos de la estantería...</span>';
+                return;
+            }
+
+            container.innerHTML = currentPackedItems.map((id, index) => {
+                const p = PRODUCTS.find(item => item.id === id);
+                return `
+                <span onclick="removeGamePackedItem(${index})" class="px-2.5 py-1 bg-brand-500 text-white rounded-lg text-xs font-bold cursor-pointer hover:bg-rose-500 transition flex items-center gap-1">
+                    ${p.name} ✕
+                </span>
+                `;
+            }).join('');
+        }
+
+        function removeGamePackedItem(index) {
+            currentPackedItems.splice(index, 1);
+            updateGamePackedUI();
+        }
+
+        function dispatchGameOrder() {
+            if (!gameActive) return;
+
+            clearInterval(gameTimer);
+            const isCorrect = JSON.stringify(currentPackedItems.sort()) === JSON.stringify(currentOrderRequirement.sort());
+
+            if (isCorrect) {
+                const orderVal = currentPackedItems.reduce((sum, id) => sum + (PRODUCTS.find(p=>p.id===id)?.price||0), 0);
+                gameEarnings += orderVal;
+                gameReputation = Math.min(100, gameReputation + 5);
+                gameScore += 1;
+                showToast(`🎯 ¡Pedido perfecto! Ganaste $${orderVal} 💰`);
+            } else {
+                gameReputation = Math.max(0, gameReputation - 10);
+                showToast('❌ El pedido no coincidía con lo solicitado.');
+            }
+
+            updateGameDashboard();
+            gameActive = false;
+            document.getElementById('dispatch-order-btn').disabled = true;
+        }
+
+        function updateGameDashboard() {
+            document.getElementById('game-reputation').innerText = `${gameReputation} ⭐`;
+            document.getElementById('game-earnings').innerText = `$${gameEarnings}`;
+            document.getElementById('game-orders-count').innerText = gameScore;
+        }
+
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-4 py-3 rounded-2xl shadow-xl font-bold text-xs flex items-center gap-2 transform transition-all duration-300 translate-y-4 opacity-0';
+            toast.innerHTML = `<i class="fa-solid fa-circle-info text-brand-500"></i> ${message}`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-4', 'opacity-0');
+            }, 50);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-4');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
